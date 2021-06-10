@@ -5,7 +5,9 @@ resource "google_compute_instance_template" "tpl" {
   region                  = var.region
   tags                    = var.tags
   can_ip_forward          = var.can_ip_forward
+  labels                  = var.labels
   metadata_startup_script = file(var.metadata_startup_script)
+
   disk {
     source_image = var.source_image
     auto_delete  = var.auto_delete

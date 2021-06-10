@@ -49,3 +49,9 @@ variable "metadata_startup_script" {
   description = "User startup script to run when instances spin up"
   default     = ""
 }
+
+variable "labels" {
+  description = "Labels, provided as a map"
+  type        = map(string)
+  default     = {}
+}

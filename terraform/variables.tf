@@ -55,3 +55,14 @@ variable "labels" {
   type        = map(string)
   default     = {}
 }
+
+variable "storage_class" {
+  description = "Storage bucket class."
+  type        = string
+  default     = "STANDARD"
+}
+variable "location" {
+  description = "GCS location for storage bucket"
+  type        = string
+  default     = "US"
+}

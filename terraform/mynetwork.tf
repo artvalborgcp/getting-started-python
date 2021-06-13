@@ -1,13 +1,17 @@
+
 resource "google_compute_network" "mygcpnet" {
-  name = "mygcpnet"
-  #auto_create_subnetworks = "true"
+  project                 = var.project_id
+  name                    = var.network_name
+  auto_create_subnetworks = var.auto_create_subnetworks
 }
 
 resource "google_compute_subnetwork" "mygcpsubnet" {
   name          = "mygcpsubnet"
   network       = google_compute_network.mygcpnet.id
-  ip_cidr_range = "10.0.0.0/24"
-  region        = "us-central1"
+  ip_cidr_range = var.ip_cidr_range
+  region        = var.region
+  depends_on    = [google_compute_network.mygcpnet]
+
 }
 
 
@@ -17,7 +21,7 @@ resource "google_compute_firewall" "mygcpnet-allow-http-ssh-rdp-icmp" {
   network = google_compute_network.mygcpnet.self_link
   allow {
     protocol = "tcp"
-    ports    = ["22", "80", "3389"]
+    ports    = ["22", "80", "8080"]
   }
   allow {
     protocol = "icmp"
@@ -44,6 +48,10 @@ resource "google_compute_router_nat" "mygcpnat" {
 }
 
 
+resource "google_project_default_service_accounts" "my_project" {
+  project = var.project_id
+  action  = var.action
+}
 
 resource "google_service_account" "isa" {
   project      = var.project_id
@@ -64,9 +72,15 @@ resource "google_project_iam_member" "isa-role-storageobjectViewer" {
   role    = "roles/storage.objectViewer"
   project = var.project_id
 }
-resource "google_project_iam_member" "isa-role-sourcereader" {
+resource "google_project_iam_member" "isa-role-datastoreuser" {
 
   member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/source.reader"
+  role    = "roles/datastore.user"
+  project = var.project_id
+}
+resource "google_project_iam_member" "isa-role-pubsub" {
+
+  member  = "serviceAccount:${google_service_account.isa.email}"
+  role    = "roles/pubsub.editor"
   project = var.project_id
 }

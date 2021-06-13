@@ -16,14 +16,11 @@ resource "google_compute_instance_template" "tpl" {
   }
 
   network_interface {
-    network    = "mygcpnet"
-    subnetwork = "mygcpsubnet"
-    access_config {
-    }
+    network    = var.network_name
+    subnetwork = var.subnetname
+    #  access_config {
+    #  }
   }
-
-
-
 
   service_account {
 
@@ -32,7 +29,7 @@ resource "google_compute_instance_template" "tpl" {
   }
 
 }
-
+/*
 resource "google_compute_instance_from_template" "tpl" {
   name                     = var.name_prefix
   zone                     = var.zone
@@ -45,8 +42,44 @@ resource "google_compute_instance_from_template" "tpl" {
   }
   depends_on = [google_compute_subnetwork.mygcpsubnet]
 }
+*/
+
+resource "google_compute_health_check" "autohealing" {
+  name                = "${var.name_prefix}-health-check"
+  project             = var.project_id
+  check_interval_sec  = 5
+  timeout_sec         = 5
+  healthy_threshold   = 2
+  unhealthy_threshold = 10 # 50 seconds
+
+  http_health_check {
+    request_path = "/"
+    port         = var.service_port
+  }
+}
+
+resource "google_compute_instance_group_manager" "instance_group_manager" {
+  name               = var.name_prefix
+  base_instance_name = var.name_prefix
+  zone               = var.zone
+  target_size        = var.target_size
+  named_port {
+    name = var.service_port_name
+    port = var.service_port
+  }
+  auto_healing_policies {
+    health_check      = google_compute_health_check.autohealing.id
+    initial_delay_sec = 300
+  }
+  version {
+    instance_template = google_compute_instance_template.tpl.id
+  }
+}
+
+
+
 resource "google_storage_bucket" "bucket" {
-  name          = "my-gcp-terraform-bucket"
+  name          = "${var.project_id}-bucket"
   project       = var.project_id
   labels        = var.labels
   storage_class = var.storage_class

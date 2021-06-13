@@ -19,7 +19,15 @@ variable "tags" {
   type        = list(string)
   default     = []
 }
-
+variable "firewall" {
+  description = "Firewallname"
+  type        = string
+}
+variable "firewallports" {
+  description = "Firewall Ports, provided as a list"
+  type        = list(string)
+  default     = []
+}
 variable "region" {
   description = "Region where the instance template should be created."
   type        = string
@@ -86,7 +94,18 @@ variable "auto_create_subnetworks" {
   type        = bool
   default     = false
 }
-
+variable "subnetname" {
+  description = "The name of the subnet being created"
+  type        = string
+}
+variable "routername" {
+  description = "The name of the router being created"
+  type        = string
+}
+variable "natname" {
+  description = "The name of the nat being created"
+  type        = string
+}
 variable "ip_cidr_range" {
   description = "The ip subnet of the network being created"
   type        = string
@@ -96,4 +115,21 @@ variable "action" {
   description = "Service account disable action"
   type        = string
   default     = "DELETE"
+}
+variable "target_size" {
+  description = "The number of running instances"
+  type        = string
+  default     = "1"
+}
+variable "url_map" {
+  description = "The number of running instances"
+  type        = string
+  default     = "/_ah/health"
+}
+variable "service_port" {
+  description = "Port the service is listening on."
+}
+
+variable "service_port_name" {
+  description = "Name of the port the service is listening on."
 }

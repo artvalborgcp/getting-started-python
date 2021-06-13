@@ -3,6 +3,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "name_prefix" {
+  description = "Name prefix for the instance template"
+  type        = string
+  default     = "default-instance-template"
+}
+
 variable "machine_type" {
   description = "Machine type to create, e.g. f1-micro"
   default     = "f1-micro"
@@ -19,7 +25,11 @@ variable "region" {
   type        = string
   default     = null
 }
-
+variable "zone" {
+  description = "Zone where the instances should be created. If not specified, instances will be spread across available zones in the region."
+  type        = string
+  default     = null
+}
 variable "source_image" {
   description = "Source disk image. If neither source_image nor source_image_family is specified, defaults to the latest public CentOS image."
   default     = ""
@@ -65,4 +75,25 @@ variable "location" {
   description = "GCS location for storage bucket"
   type        = string
   default     = "US"
+}
+
+variable "network_name" {
+  description = "The name of the network being created"
+  type        = string
+}
+variable "auto_create_subnetworks" {
+  description = "When set to true, the network is created in 'auto subnet mode' and it will create a subnet for each region automatically across the 10.128.0.0/9 address range. When set to false, the network is created in 'custom subnet mode' so the user can explicitly connect subnetwork resources."
+  type        = bool
+  default     = false
+}
+
+variable "ip_cidr_range" {
+  description = "The ip subnet of the network being created"
+  type        = string
+}
+
+variable "action" {
+  description = "Service account disable action"
+  type        = string
+  default     = "DELETE"
 }

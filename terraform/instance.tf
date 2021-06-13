@@ -1,11 +1,11 @@
 resource "google_compute_instance_template" "tpl" {
-  name           = "template"
-  project        = var.project_id
-  machine_type   = var.machine_type
-  region         = var.region
-  tags           = var.tags
-  can_ip_forward = var.can_ip_forward
-  labels         = var.labels
+  name                    = var.name_prefix
+  project                 = var.project_id
+  machine_type            = var.machine_type
+  region                  = var.region
+  tags                    = var.tags
+  can_ip_forward          = var.can_ip_forward
+  labels                  = var.labels
   metadata_startup_script = file(var.metadata_startup_script)
 
   disk {
@@ -16,8 +16,10 @@ resource "google_compute_instance_template" "tpl" {
   }
 
   network_interface {
-    network = "mygcpnet"
-#    subnetwork = "mygcpsubnet"
+    network    = "mygcpnet"
+    subnetwork = "mygcpsubnet"
+    access_config {
+    }
   }
 
 
@@ -32,16 +34,22 @@ resource "google_compute_instance_template" "tpl" {
 }
 
 resource "google_compute_instance_from_template" "tpl" {
-  name = "bookshelfinstance1"
-  zone = "us-central1-a"
+  name                     = var.name_prefix
+  zone                     = var.zone
   source_instance_template = google_compute_instance_template.tpl.id
+  network_interface {
+    network    = "mygcpnet"
+    subnetwork = "mygcpsubnet"
+    access_config {
+    }
+  }
+  depends_on = [google_compute_subnetwork.mygcpsubnet]
 }
-
 resource "google_storage_bucket" "bucket" {
-  name          = var.project_id-"bucket"
-  project        = var.project_id
-  labels         = var.labels
-  storage_class  = var.storage_class
+  name          = "my-gcp-terraform-bucket"
+  project       = var.project_id
+  labels        = var.labels
+  storage_class = var.storage_class
   location      = var.location
 
 }

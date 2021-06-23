@@ -6,7 +6,7 @@ terraform {
   }
 }
 provider "google" {
-  #  credentials = "${file("account.json")}"
-  project = var.project_id
-  region  = var.region
+  credentials = file(var.gcp_auth_file)
+  project     = var.project_id
+  region      = var.region
 }

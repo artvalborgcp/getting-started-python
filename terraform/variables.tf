@@ -1,3 +1,8 @@
+variable "gcp_auth_file" {
+  type        = string
+  description = "GCP authentication file"
+}
+
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string

@@ -14,7 +14,7 @@ resource "google_compute_instance_template" "tpl" {
     disk_size_gb = var.disk_size_gb
     boot         = true
   }
-
+  depends_on = [google_compute_subnetwork.mygcpsubnet]
   network_interface {
     network    = var.network_name
     subnetwork = var.subnetname
@@ -29,20 +29,7 @@ resource "google_compute_instance_template" "tpl" {
   }
 
 }
-/*
-resource "google_compute_instance_from_template" "tpl" {
-  name                     = var.name_prefix
-  zone                     = var.zone
-  source_instance_template = google_compute_instance_template.tpl.id
-  network_interface {
-    network    = "mygcpnet"
-    subnetwork = "mygcpsubnet"
-    access_config {
-    }
-  }
-  depends_on = [google_compute_subnetwork.mygcpsubnet]
-}
-*/
+
 
 resource "google_compute_health_check" "autohealing" {
   name                = "${var.name_prefix}-health-check"
@@ -74,6 +61,9 @@ resource "google_compute_instance_group_manager" "instance_group_manager" {
   version {
     instance_template = google_compute_instance_template.tpl.id
   }
+
+  depends_on = [google_service_account.isa]
+
 }
 
 

@@ -161,3 +161,10 @@ resource "google_project_iam_member" "isa-role-sourcereader" {
   role    = "roles/source.reader"
   project = var.project_id
 }
+
+resource "google_project_iam_member" "isa-role-computeadmin" {
+
+  member  = "serviceAccount:${google_service_account.isa.email}"
+  role    = "roles/compute.loadBalancerAdmin"
+  project = var.project_id
+}

@@ -220,3 +220,16 @@ variable "sa_compute_scope" {
   type        = list(string)
   default     = []
 }
+
+
+variable "roles_for_gcp" {
+  description = "Roles for Service Account the Instances"
+  type        = map(string)
+  default = {
+    "storage"   = "roles/storage.objectCreator"
+    "datastore" = "roles/datastore.user"
+    "pubsub"    = "roles/pubsub.editor"
+    "source"    = "roles/source.reader"
+
+  }
+}

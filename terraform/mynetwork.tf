@@ -121,40 +121,10 @@ resource "google_service_account" "isa" {
 }
 
 
-resource "google_project_iam_member" "isa-role-storageobjectCreator" {
+resource "google_project_iam_member" "admins" {
+  depends_on = [google_service_account.isa]
+  for_each   = var.roles_for_gcp
+  role       = each.value
+  member     = "serviceAccount:${google_service_account.isa.email}"
 
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/storage.objectCreator"
-  project = var.project_id
-}
-resource "google_project_iam_member" "isa-role-storageobjectViewer" {
-
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/storage.objectViewer"
-  project = var.project_id
-}
-resource "google_project_iam_member" "isa-role-datastoreuser" {
-
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/datastore.user"
-  project = var.project_id
-}
-resource "google_project_iam_member" "isa-role-pubsub" {
-
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/pubsub.editor"
-  project = var.project_id
-}
-resource "google_project_iam_member" "isa-role-sourcereader" {
-
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/source.reader"
-  project = var.project_id
-}
-
-resource "google_project_iam_member" "isa-role-computeadmin" {
-
-  member  = "serviceAccount:${google_service_account.isa.email}"
-  role    = "roles/compute.loadBalancerAdmin"
-  project = var.project_id
 }

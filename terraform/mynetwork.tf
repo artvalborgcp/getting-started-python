@@ -1,13 +1,13 @@
 
 resource "google_compute_network" "mygcpnet" {
   project                 = var.project_id
-  name                    = var.network_name
+  name                    = "${var.name_prefix}-network"
   auto_create_subnetworks = var.auto_create_subnetworks
 }
 
 resource "google_compute_subnetwork" "mygcpsubnet" {
   project       = var.project_id
-  name          = var.subnetname
+  name          = "${var.name_prefix}-subnet"
   network       = google_compute_network.mygcpnet.id
   ip_cidr_range = var.ip_cidr_range
   region        = var.region
@@ -17,11 +17,11 @@ resource "google_compute_subnetwork" "mygcpsubnet" {
 
 resource "google_compute_firewall" "mygcpnet-allow-http-ssh-rdp-icmp" {
   project = var.project_id
-  name    = var.firewall
+  name    = "${var.name_prefix}-firewall"
   network = google_compute_network.mygcpnet.self_link
   allow {
-    protocol = "tcp"
-    ports    = var.firewallports
+    protocol = var.firewallallowproto
+    ports    = var.firewallallowports
   }
   allow {
     protocol = "icmp"
@@ -31,44 +31,39 @@ resource "google_compute_firewall" "mygcpnet-allow-http-ssh-rdp-icmp" {
 
 resource "google_compute_router" "mygcprouter" {
   project = var.project_id
-  name    = var.routername
+  name    = "${var.name_prefix}-router"
   region  = google_compute_subnetwork.mygcpsubnet.region
   network = google_compute_network.mygcpnet.id
 
-  bgp {
-    asn = 64514
-  }
 }
 
 resource "google_compute_router_nat" "mygcpnat" {
   project                            = var.project_id
-  name                               = var.natname
+  name                               = "${var.name_prefix}-nat"
   router                             = google_compute_router.mygcprouter.name
   region                             = google_compute_router.mygcprouter.region
-  nat_ip_allocate_option             = "AUTO_ONLY"
-  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+  nat_ip_allocate_option             = var.nat_ip_allocate_option
+  source_subnetwork_ip_ranges_to_nat = var.source_subnetwork_ip_ranges_to_nat
 }
 
 
-resource "google_compute_global_address" "default" {
-  project      = var.project_id
-  name         = "${var.name_prefix}-address"
-  ip_version   = "IPV4"
-  address_type = "EXTERNAL"
+resource "google_compute_global_address" "mygcpglobaladdress" {
+  project = var.project_id
+  name    = "${var.name_prefix}-address"
 }
 
-resource "google_compute_http_health_check" "default" {
-  name         = "authentication-health-check"
+resource "google_compute_http_health_check" "mygcplbhealth" {
+  name         = "${var.name_prefix}-lb-health-check"
   request_path = var.url_map
   port         = var.service_port
 
-  timeout_sec        = 1
-  check_interval_sec = 1
+  timeout_sec        = var.timeout_mygcplb
+  check_interval_sec = var.check_interval_mygcplb
 }
 
-resource "google_compute_url_map" "default" {
-  name            = "url-map"
-  default_service = google_compute_backend_service.default.id
+resource "google_compute_url_map" "url" {
+  name            = "${var.name_prefix}-url"
+  default_service = google_compute_backend_service.backendservice.id
 
   host_rule {
     hosts        = ["*"]
@@ -77,56 +72,51 @@ resource "google_compute_url_map" "default" {
 
   path_matcher {
     name            = "allpaths"
-    default_service = google_compute_backend_service.default.id
+    default_service = google_compute_backend_service.backendservice.id
 
     path_rule {
       paths   = ["/*"]
-      service = google_compute_backend_service.default.id
+      service = google_compute_backend_service.backendservice.id
     }
   }
 }
 
 resource "google_compute_target_http_proxy" "http" {
-  count   = "1"
   project = var.project_id
   name    = "${var.name_prefix}-http-proxy"
-  url_map = google_compute_url_map.default.id
+  url_map = google_compute_url_map.url.id
 }
 
 resource "google_compute_global_forwarding_rule" "http" {
 
   project    = var.project_id
   name       = "${var.name_prefix}-http-rule"
-  target     = google_compute_target_http_proxy.http[0].self_link
-  ip_address = google_compute_global_address.default.address
-  port_range = "80"
+  target     = google_compute_target_http_proxy.http.id
+  ip_address = google_compute_global_address.mygcpglobaladdress.address
+  port_range = var.globalforwardingport
 
 
-  depends_on = [google_compute_global_address.default]
+  depends_on = [google_compute_global_address.mygcpglobaladdress]
 
 }
 
-resource "google_compute_backend_service" "default" {
+resource "google_compute_backend_service" "backendservice" {
   name          = "${var.name_prefix}-backend-service"
   project       = var.project_id
   port_name     = var.service_port_name
-  protocol      = "HTTP"
-  timeout_sec   = 10
-  health_checks = [google_compute_http_health_check.default.id]
+  protocol      = var.protocol_backendservice
+  timeout_sec   = var.timeout_backendservice
+  health_checks = [google_compute_http_health_check.mygcplbhealth.id]
   backend {
     group = google_compute_instance_group_manager.instance_group_manager.instance_group
   }
 }
 
 
-resource "google_project_default_service_accounts" "my_project" {
-  project = var.project_id
-  action  = var.action
-}
 
 resource "google_service_account" "isa" {
   project      = var.project_id
-  account_id   = "compute-instance"
+  account_id   = var.account_id
   display_name = "ServiceAccount for compute_instance"
 }
 

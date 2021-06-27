@@ -12,35 +12,35 @@ resource "google_compute_instance_template" "tpl" {
     source_image = var.source_image
     auto_delete  = var.auto_delete
     disk_size_gb = var.disk_size_gb
-    boot         = true
+    disk_type    = var.disk_type
+    boot         = var.boot
   }
   depends_on = [google_compute_subnetwork.mygcpsubnet]
   network_interface {
-    network    = var.network_name
-    subnetwork = var.subnetname
-    #  access_config {
-    #  }
+    network    = google_compute_network.mygcpnet.name
+    subnetwork = google_compute_subnetwork.mygcpsubnet.name
+
   }
 
   service_account {
 
     email  = google_service_account.isa.email
-    scopes = ["cloud-platform"]
+    scopes = var.sa_compute_scope
   }
 
 }
 
 
-resource "google_compute_health_check" "autohealing" {
-  name                = "${var.name_prefix}-health-check"
+resource "google_compute_health_check" "instance" {
+  name                = "${var.name_prefix}-instance-health-check"
   project             = var.project_id
-  check_interval_sec  = 5
-  timeout_sec         = 5
-  healthy_threshold   = 2
-  unhealthy_threshold = 10 # 50 seconds
+  check_interval_sec  = var.check_interval_sec_instance
+  timeout_sec         = var.timeout_sec_instance
+  healthy_threshold   = var.healthy_threshold_instance
+  unhealthy_threshold = var.unhealthy_threshold_instance
 
   http_health_check {
-    request_path = "/"
+    request_path = var.url_map
     port         = var.service_port
   }
 }
@@ -55,8 +55,8 @@ resource "google_compute_instance_group_manager" "instance_group_manager" {
     port = var.service_port
   }
   auto_healing_policies {
-    health_check      = google_compute_health_check.autohealing.id
-    initial_delay_sec = 300
+    health_check      = google_compute_health_check.instance.id
+    initial_delay_sec = var.initial_delay_sec
   }
   version {
     instance_template = google_compute_instance_template.tpl.id

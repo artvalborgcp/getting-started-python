@@ -1,11 +1,18 @@
 resource "google_compute_instance_template" "tpl" {
-  name                    = var.name_prefix
-  project                 = var.project_id
-  machine_type            = var.machine_type
-  region                  = var.region
-  tags                    = var.tags
-  can_ip_forward          = var.can_ip_forward
-  labels                  = var.labels
+  name           = var.name_prefix
+  project        = var.project_id
+  machine_type   = var.machine_type
+  region         = var.region
+  tags           = var.tags
+  can_ip_forward = var.can_ip_forward
+  labels         = var.labels
+  metadata = {
+    PROJECT_ID           = var.project_id
+    region               = var.region
+    zone                 = var.zone
+    DATA_BACKEND         = var.databackend
+    CLOUD_STORAGE_BUCKET = "${var.project_id}-bucket"
+  }
   metadata_startup_script = file(var.metadata_startup_script)
 
   disk {

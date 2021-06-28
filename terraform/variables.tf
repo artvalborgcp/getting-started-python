@@ -1,6 +1,6 @@
 variable "gcp_auth_file" {
-  type        = string
   description = "GCP authentication file"
+  type        = string
 }
 
 variable "project_id" {
@@ -24,6 +24,12 @@ variable "name_prefix" {
   default     = "default-instance-template"
 }
 
+variable "databackend" {
+  description = "Databackend for the instance template"
+  type        = string
+  default     = "datastore"
+}
+
 
 variable "machine_type" {
   description = "Machine type to create, e.g. f1-micro"
@@ -39,6 +45,7 @@ variable "tags" {
 
 variable "can_ip_forward" {
   description = "Enable IP forwarding, for NAT instances for example"
+  type        = bool
   default     = "false"
 }
 
@@ -50,6 +57,7 @@ variable "labels" {
 
 variable "metadata_startup_script" {
   description = "User startup script to run when instances spin up"
+  type        = string
   default     = ""
 }
 

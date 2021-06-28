@@ -37,13 +37,13 @@ PROJECT_ID = os.environ.get('PROJECT_ID')
 # CloudSQL & SQLAlchemy configuration
 # Replace the following values the respective values of your Cloud SQL
 # instance.
-CLOUDSQL_USER = 'root'
-CLOUDSQL_PASSWORD = 'uP4qhmCzLIairbNO'
-CLOUDSQL_DATABASE = 'bookshelf'
+CLOUDSQL_USER = os.environ.get('CLOUDSQL_USER')
+CLOUDSQL_PASSWORD = os.environ.get('CLOUDSQL_PASSWORD')
+CLOUDSQL_DATABASE = os.environ.get('CLOUDSQL_DATABASE')
 # Set this value to the Cloud SQL connection name, e.g.
 #   "project:region:cloudsql-instance".
 # You must also update the value in app.yaml.
-CLOUDSQL_CONNECTION_NAME = 'my-gcp-terraform:us-central1:bookshelf'
+CLOUDSQL_CONNECTION_NAME = os.environ.get('CLOUDSQL_CONNECTION_NAME')
 
 # The CloudSQL proxy is used locally to connect to the cloudsql instance.
 # To start the proxy, use:

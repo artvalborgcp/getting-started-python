@@ -17,14 +17,18 @@
 set -v
 
 # Talk to the metadata server to get the project id
-PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
-export $PROJECT_ID;
-export region=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/region" -H "Metadata-Flavor: Google")
-export zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/zone" -H "Metadata-Flavor: Google")
-export DATA_BACKEND=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/DATA_BACKEND" -H "Metadata-Flavor: Google")
-export CLOUD_STORAGE_BUCKET=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUD_STORAGE_BUCKET" -H "Metadata-Flavor: Google")
+PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google") >
 
+region=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/region" -H "Metadata-Flavor: Google")
+zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/zone" -H "Metadata-Flavor: Google")
+DATA_BACKEND=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/DATA_BACKEND" -H "Metadata-Flavor: Google")
+CLOUD_STORAGE_BUCKET=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUD_STORAGE_BUCKET" -H "Metadata-Flavor: Google")
 
+echo  PROJECT_ID=$PROJECT_ID >> /etc/profile
+echo  region=$region >> /etc/profile
+echo  zone=$zone >> /etc/profile
+echo  DATA_BACKEND=$DATA_BACKEND >> /etc/profile
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /etc/profile
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
 # syslog.

@@ -32,7 +32,7 @@ DATA_BACKEND = os.environ.get('DATA_BACKEND')
 
 # Google Cloud Project ID. This can be found on the 'Overview' page at
 # https://console.developers.google.com
-PROJECT_ID = os.environ.get('PROJECT_ID'')
+PROJECT_ID = os.environ.get('PROJECT_ID')
 
 # CloudSQL & SQLAlchemy configuration
 # Replace the following values the respective values of your Cloud SQL

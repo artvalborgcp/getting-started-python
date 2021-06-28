@@ -76,7 +76,7 @@ user=pythonapp
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
     HOME="/home/pythonapp",USER="pythonapp",\
-    PROJECT_ID=$PROJECT_ID,region=$region, zone=$zone,DATA_BACKEND=$DATA_BACKEND,CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET
+    PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET"
 stdout_logfile=syslog
 stderr_logfile=syslog
 EOF

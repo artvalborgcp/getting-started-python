@@ -29,6 +29,17 @@ CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/ins
 CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
 CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
 GAE_INSTANCE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/GAE_INSTANCE" -H "Metadata-Flavor: Google")
+export CLOUDSQL_USER
+export CLOUDSQL_PASSWORD
+export CLOUDSQL_DATABASE
+export CLOUDSQL_CONNECTION_NAME
+export GAE_INSTANCE
+export PROJECT_ID
+export DATA_BACKEND
+export region
+export zone
+export CLOUD_STORAGE_BUCKET
+
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
 # syslog.

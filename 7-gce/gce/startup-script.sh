@@ -55,8 +55,8 @@ apt-get install -yq \
     libssl-dev
 
 cd /usr/local/bin
-sudo wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy
-sudo chmod +x cloud_sql_proxy
+curl  https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
+chmod +x cloud_sql_proxy
 cloud_sql_proxy -instances=$CLOUDSQL_CONNECTION_NAME=tcp:3306
 # Create a pythonapp user. The application will run as this user.
 useradd -m -d /home/pythonapp pythonapp

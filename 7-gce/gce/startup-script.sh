@@ -76,8 +76,9 @@ User=root
 WantedBy=multi-user.target
 
 EOF
-
+systemctl daemon-reload
 systemctl enable cloud-sql-proxy
+systemctl start cloud-sql-proxy
 # Create a pythonapp user. The application will run as this user.
 useradd -m -d /home/pythonapp pythonapp
 

@@ -28,7 +28,6 @@ CLOUDSQL_USER=$(curl "http://metadata.google.internal/computeMetadata/v1/instanc
 CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_PASSWORD" -H "Metadata-Flavor: Google")
 CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
 CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
-GAE_INSTANCE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/GAE_INSTANCE" -H "Metadata-Flavor: Google")
 
 echo  PROJECT_ID=$PROJECT_ID >> /etc/profile
 echo  region=$region >> /etc/profile
@@ -39,7 +38,7 @@ echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /etc/profile
 echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/profile
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/profile
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/profile
-echo  GAE_INSTANCE=$GAE_INSTANCE >> /etc/profile
+
 
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
@@ -94,7 +93,7 @@ environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
     HOME="/home/pythonapp",USER="pythonapp",\
     PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET",\
     CLOUDSQL_USER="$CLOUDSQL_USER",CLOUDSQL_PASSWORD="$CLOUDSQL_PASSWORD",CLOUDSQL_DATABASE="$CLOUDSQL_DATABASE",\
-    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME",GAE_INSTANCE="$GAE_INSTANCE"
+    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME"
 stdout_logfile=syslog
 stderr_logfile=syslog
 EOF

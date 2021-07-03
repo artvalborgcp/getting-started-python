@@ -73,8 +73,10 @@ git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
 cd /opt/app && git checkout mygcpsteps;
 
-echo  "export PROJECT_ID=$PROJECT_ID" >> /opt/app/7-gce/env/bin/activate
 
+# Install app dependencies
+virtualenv -p python3 /opt/app/7-gce/env
+echo  "export PROJECT_ID=$PROJECT_ID" >> /opt/app/7-gce/env/bin/activate
 variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME;
 for val in ${variablesList//,/ }
 do
@@ -85,8 +87,6 @@ do
      echo "export $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /opt/app/7-gce/env/bin/activate
    fi;
 done
-# Install app dependencies
-virtualenv -p python3 /opt/app/7-gce/env
 source /opt/app/7-gce/env/bin/activate
 /opt/app/7-gce/env/bin/pip install -r /opt/app/7-gce/requirements.txt
 

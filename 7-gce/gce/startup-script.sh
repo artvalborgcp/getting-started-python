@@ -16,20 +16,9 @@
 # [START startup]
 set -v
 
-# VariablesList of metadata_startup_script
-variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME;
-for val in ${variablesList//,/ }
-do
-   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
-   if [[ "$response_code" -ne 200 ]] ; then
-     continue
-   else
-     echo "export $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /opt/app/7-gce/env/bin/activate
-   fi;
-done
+#
 # Talk to the metadata server to get the project id
-PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
-echo  PROJECT_ID=$PROJECT_ID >> /etc/profile
+
 
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
@@ -82,6 +71,20 @@ export HOME=/root
 git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
 cd /opt/app && git checkout mygcpsteps;
+
+PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
+echo  "export PROJECT_ID=$PROJECT_ID" >> /opt/app/7-gce/env/bin/activate
+
+variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME;
+for val in ${variablesList//,/ }
+do
+   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
+   if [[ "$response_code" -ne 200 ]] ; then
+     continue
+   else
+     echo "export $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /opt/app/7-gce/env/bin/activate
+   fi;
+done
 # Install app dependencies
 virtualenv -p python3 /opt/app/7-gce/env
 source /opt/app/7-gce/env/bin/activate

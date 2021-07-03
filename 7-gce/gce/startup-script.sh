@@ -39,8 +39,6 @@ echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/profile
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/profile
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/profile
 
-
-
 # Install logging monitor. The monitor will automatically pickup logs sent to
 # syslog.
 # [START logging]

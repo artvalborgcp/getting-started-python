@@ -19,6 +19,7 @@ set -v
 #
 # Talk to the metadata server to get the project id
 
+PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
@@ -72,7 +73,6 @@ git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
 cd /opt/app && git checkout mygcpsteps;
 
-PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 echo  "export PROJECT_ID=$PROJECT_ID" >> /opt/app/7-gce/env/bin/activate
 
 variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME;

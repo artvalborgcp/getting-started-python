@@ -16,13 +16,13 @@ import logging
 
 from bookshelf import get_model, storage
 from flask import current_app
-from google.cloud import pubsub_v1
+from google.cloud import pubsub_v1 as pubsub
 import psq
 import requests
 
 
-publisher_client = pubsub_v1.PublisherClient()
-subscriber_client = pubsub_v1.SubscriberClient()
+publisher_client = pubsub.PublisherClient()
+subscriber_client = pubsub.SubscriberClient()
 
 
 def get_books_queue():

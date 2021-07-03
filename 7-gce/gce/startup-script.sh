@@ -84,7 +84,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     export $val=\$${val}
+     export $val=\$${val} >> /home/pythonapp/.bashrc
 
    fi;
 done

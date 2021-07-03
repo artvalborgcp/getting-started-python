@@ -78,6 +78,17 @@ useradd -m -d /home/pythonapp pythonapp
 # pip from apt is out of date, so make it update itself and install virtualenv.
 pip3 install --upgrade pip virtualenv
 
+for val in ${variablesList//,/ }
+do
+   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
+   if [[ "$response_code" -ne 200 ]] ; then
+     continue
+   else
+     export $val=\$${val}
+
+   fi;
+done
+
 # Get the source code from the Google Cloud Repository
 # git requires $HOME and it's not set during the startup script.
 export HOME=/root
@@ -95,7 +106,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     echo "export $val=$${val}" >> /opt/app/7-gce/env/bin/activate
+     echo "export $val=$\${val}" >> /opt/app/7-gce/env/bin/activate
 
    fi;
 done

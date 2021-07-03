@@ -24,7 +24,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     echo $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google") >> /etc/profile
+     echo "export $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /opt/app/7-gce/env/bin/activate
    fi;
 done
 # Talk to the metadata server to get the project id
@@ -102,10 +102,8 @@ user=pythonapp
 # Environment variables ensure that the application runs inside of the
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
-    HOME="/home/pythonapp",USER="pythonapp",\
-    PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET",\
-    CLOUDSQL_USER="$CLOUDSQL_USER",CLOUDSQL_PASSWORD="$CLOUDSQL_PASSWORD",CLOUDSQL_DATABASE="$CLOUDSQL_DATABASE",\
-    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME"
+    HOME="/home/pythonapp",USER="pythonapp"
+
 stdout_logfile=syslog
 stderr_logfile=syslog
 EOF

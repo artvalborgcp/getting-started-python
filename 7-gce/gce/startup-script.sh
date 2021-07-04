@@ -20,20 +20,24 @@ set -v
 # Talk to the metadata server to get the project id
 
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
-echo  "PROJECT_ID=$PROJECT_ID" >> /etc/profile
-variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME
+region=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/region" -H "Metadata-Flavor: Google")
+zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/zone" -H "Metadata-Flavor: Google")
+DATA_BACKEND=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/DATA_BACKEND" -H "Metadata-Flavor: Google")
+CLOUD_STORAGE_BUCKET=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUD_STORAGE_BUCKET" -H "Metadata-Flavor: Google")
+CLOUDSQL_USER=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_USER" -H "Metadata-Flavor: Google")
+CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_PASSWORD" -H "Metadata-Flavor: Google")
+CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
+CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
 
-for val in ${variablesList//,/ }
-do
-   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
-   if [[ "$response_code" -ne 200 ]] ; then
-     continue
-   else
-     $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
-     echo "$val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /etc/profile
-
-   fi;
-done
+#echo  PROJECT_ID=$PROJECT_ID >> /etc/profile
+#echo  region=$region >> /etc/profile
+#echo  zone=$zone >> /etc/profile
+#echo  DATA_BACKEND=$DATA_BACKEND >> /etc/profile
+#echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /etc/profile
+#echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /etc/profile
+#echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/profile
+#echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/profile
+#echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/profile
 
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
@@ -55,17 +59,15 @@ useradd -m -d /home/pythonapp pythonapp
 
 # pip from apt is out of date, so make it update itself and install virtualenv.
 pip3 install --upgrade pip virtualenv
-echo  "export PROJECT_ID=$PROJECT_ID" >> /home/pythonapp/.bashrc
-for val in ${variablesList//,/ }
-do
-   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
-   if [[ "$response_code" -ne 200 ]] ; then
-     continue
-   else
-     echo "export $val=$(eval "echo \${$val}")" >> /home/pythonapp/.bashrc
-
-   fi;
-done
+echo  PROJECT_ID=$PROJECT_ID >> /home/pythonapp/.bashrc
+echo  region=$region >> /home/pythonapp/.bashrc
+echo  zone=$zone >> /home/pythonapp/.bashrc
+echo  DATA_BACKEND=$DATA_BACKEND >> /home/pythonapp/.bashrc
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
 
 # Get the source code from the Google Cloud Repository
 # git requires $HOME and it's not set during the startup script.
@@ -77,17 +79,16 @@ cd /opt/app && git checkout mygcpsteps;
 
 # Install app dependencies
 virtualenv -p python3 /opt/app/7-gce/env
-echo  "export PROJECT_ID=$PROJECT_ID" >> /opt/app/7-gce/env/bin/activate
-for val in ${variablesList//,/ }
-do
-   response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
-   if [[ "$response_code" -ne 200 ]] ; then
-     continue
-   else
-     echo "export $val=$(eval "echo \${$val}")" >> /opt/app/7-gce/env/bin/activate
 
-   fi;
-done
+echo  PROJECT_ID=$PROJECT_ID >> /opt/app/7-gce/env/bin/activate
+echo  region=$region >> /opt/app/7-gce/env/bin/activate
+echo  zone=$zone >> /opt/app/7-gce/env/bin/activate
+echo  DATA_BACKEND=$DATA_BACKEND >> /opt/app/7-gce/env/bin/activate
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /opt/app/7-gce/env/bin/activate
 source /opt/app/7-gce/env/bin/activate
 /opt/app/7-gce/env/bin/pip install -r /opt/app/7-gce/requirements.txt
 
@@ -106,10 +107,8 @@ user=pythonapp
 # Environment variables ensure that the application runs inside of the
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
-    HOME="/home/pythonapp",USER="pythonapp",\
-    PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET",\
-    CLOUDSQL_USER="$CLOUDSQL_USER",CLOUDSQL_PASSWORD="$CLOUDSQL_PASSWORD",CLOUDSQL_DATABASE="$CLOUDSQL_DATABASE",\
-    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME"
+    HOME="/home/pythonapp",USER="pythonapp"
+
 
 stdout_logfile=syslog
 stderr_logfile=syslog

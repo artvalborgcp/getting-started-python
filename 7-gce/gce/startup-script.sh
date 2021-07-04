@@ -49,31 +49,7 @@ apt-get install -yq \
     git build-essential supervisor python3 python3-dev python3-pip libffi-dev \
     libssl-dev
 
-cd /usr/local/bin
-curl  https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
-chmod +x cloud_sql_proxy
 
-cat >/etc/systemd/system/cloud-sql-proxy.service << EOF
-[Unit]
-Description=Connecting MySQL Client from Compute Engine using the Cloud SQL Proxy
-Documentation=https://cloud.google.com/sql/docs/mysql/connect-compute-engine
-Requires=networking.service
-After=networking.service
-
-[Service]
-WorkingDirectory=/usr/local/bin
-ExecStart=/usr/local/bin/cloud_sql_proxy -dir=/var/run/cloud-sql-proxy -instances=$CLOUDSQL_CONNECTION_NAME=tcp:3306
-Restart=always
-StandardOutput=journal
-User=root
-
-[Install]
-WantedBy=multi-user.target
-
-EOF
-systemctl daemon-reload
-systemctl enable cloud-sql-proxy
-systemctl start cloud-sql-proxy
 # Create a pythonapp user. The application will run as this user.
 useradd -m -d /home/pythonapp pythonapp
 
@@ -130,7 +106,10 @@ user=pythonapp
 # Environment variables ensure that the application runs inside of the
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
-    HOME="/home/pythonapp",USER="pythonapp"
+    HOME="/home/pythonapp",USER="pythonapp",\
+    PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET",\
+    CLOUDSQL_USER="$CLOUDSQL_USER",CLOUDSQL_PASSWORD="$CLOUDSQL_PASSWORD",CLOUDSQL_DATABASE="$CLOUDSQL_DATABASE",\
+    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME"
 
 stdout_logfile=syslog
 stderr_logfile=syslog
@@ -140,4 +119,31 @@ supervisorctl reread
 supervisorctl update
 
 # Application should now be running under supervisor
+
+cd /usr/local/bin
+curl  https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
+chmod +x cloud_sql_proxy
+
+cat >/etc/systemd/system/cloud-sql-proxy.service << EOF
+[Unit]
+Description=Connecting MySQL Client from Compute Engine using the Cloud SQL Proxy
+Documentation=https://cloud.google.com/sql/docs/mysql/connect-compute-engine
+Requires=networking.service
+After=networking.service
+
+[Service]
+WorkingDirectory=/usr/local/bin
+ExecStart=/usr/local/bin/cloud_sql_proxy -dir=/var/run/cloud-sql-proxy -instances=$CLOUDSQL_CONNECTION_NAME=tcp:3306
+Restart=always
+StandardOutput=journal
+User=pythonapp
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+systemctl daemon-reload
+systemctl enable cloud-sql-proxy
+systemctl start cloud-sql-proxy
+
 # [END startup]

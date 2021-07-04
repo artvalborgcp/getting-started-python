@@ -21,7 +21,7 @@ set -v
 
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 echo  "export PROJECT_ID=$PROJECT_ID" >> /etc/profile
-variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME;
+variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME
 
 for val in ${variablesList//,/ }
 do
@@ -77,7 +77,7 @@ useradd -m -d /home/pythonapp pythonapp
 
 # pip from apt is out of date, so make it update itself and install virtualenv.
 pip3 install --upgrade pip virtualenv
-
+echo  "export PROJECT_ID=$PROJECT_ID" >> /home/pythonapp/.bashrc
 for val in ${variablesList//,/ }
 do
    response_code=$(curl --write-out '%{http_code}' --silent --output /dev/null "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")

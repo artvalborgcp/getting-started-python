@@ -7,11 +7,15 @@ resource "google_compute_instance_template" "tpl" {
   can_ip_forward = var.can_ip_forward
   labels         = var.labels
   metadata = {
-    PROJECT_ID           = var.project_id
-    region               = var.region
-    zone                 = var.zone
-    DATA_BACKEND         = var.databackend
-    CLOUD_STORAGE_BUCKET = "${var.project_id}-bucket"
+    PROJECT_ID               = var.project_id
+    region                   = var.region
+    zone                     = var.zone
+    DATA_BACKEND             = var.databackend
+    CLOUD_STORAGE_BUCKET     = "${var.project_id}-bucket"
+    CLOUDSQL_USER            = var.user_name
+    CLOUDSQL_PASSWORD        = var.user_password
+    CLOUDSQL_DATABASE        = var.db_name_prefix
+    CLOUDSQL_CONNECTION_NAME = "${var.project_id}:${var.region}:${var.db_name_prefix}"
   }
   metadata_startup_script = file(var.metadata_startup_script)
 

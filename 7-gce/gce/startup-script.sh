@@ -20,7 +20,7 @@ set -v
 # Talk to the metadata server to get the project id
 
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
-echo  "export PROJECT_ID=$PROJECT_ID" >> /etc/profile
+echo  "PROJECT_ID=$PROJECT_ID" >> /etc/profile
 variablesList=region,zone,DATA_BACKEND,CLOUD_STORAGE_BUCKET,CLOUDSQL_USER,CLOUDSQL_PASSWORD,CLOUDSQL_DATABASE,CLOUDSQL_CONNECTION_NAME
 
 for val in ${variablesList//,/ }
@@ -29,7 +29,9 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
+     $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")
      echo "$val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /etc/profile
+
    fi;
 done
 
@@ -84,7 +86,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     echo "export $val=\$${val}" >> /home/pythonapp/.bashrc
+     echo "export $val=$(eval "echo \${$val}")" >> /home/pythonapp/.bashrc
 
    fi;
 done
@@ -106,7 +108,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     echo "export $val=\$${val}" >> /opt/app/7-gce/env/bin/activate
+     echo "export $val=$(eval "echo \${$val}")" >> /opt/app/7-gce/env/bin/activate
 
    fi;
 done

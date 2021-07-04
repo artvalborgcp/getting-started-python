@@ -29,7 +29,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     echo "export $val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /etc/profile
+     echo "$val=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/$val" -H "Metadata-Flavor: Google")" >> /etc/profile
    fi;
 done
 
@@ -84,7 +84,7 @@ do
    if [[ "$response_code" -ne 200 ]] ; then
      continue
    else
-     export $val=\$${val} >> /home/pythonapp/.bashrc
+     echo "export $val=\$${val}" >> /home/pythonapp/.bashrc
 
    fi;
 done

@@ -16,8 +16,17 @@
 # [START startup]
 set -v
 
+#
 # Talk to the metadata server to get the project id
-PROJECTID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
+PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
+region=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/region" -H "Metadata-Flavor: Google")
+zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/zone" -H "Metadata-Flavor: Google")
+DATA_BACKEND=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/DATA_BACKEND" -H "Metadata-Flavor: Google")
+CLOUD_STORAGE_BUCKET=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUD_STORAGE_BUCKET" -H "Metadata-Flavor: Google")
+CLOUDSQL_USER=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_USER" -H "Metadata-Flavor: Google")
+CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_PASSWORD" -H "Metadata-Flavor: Google")
+CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
+CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
 # syslog.
@@ -32,20 +41,52 @@ apt-get install -yq \
     git build-essential supervisor python3 python3-dev python3-pip libffi-dev \
     libssl-dev
 
+
 # Create a pythonapp user. The application will run as this user.
 useradd -m -d /home/pythonapp pythonapp
 
 # pip from apt is out of date, so make it update itself and install virtualenv.
 pip3 install --upgrade pip virtualenv
+echo  PROJECT_ID=$PROJECT_ID >> /home/pythonapp/.bashrc
+echo  region=$region >> /home/pythonapp/.bashrc
+echo  zone=$zone >> /home/pythonapp/.bashrc
+echo  DATA_BACKEND=$DATA_BACKEND >> /home/pythonapp/.bashrc
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
+echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
+echo  "export PROJECT_ID" >> /home/pythonapp/.bashrc
+echo  "export region" >> /home/pythonapp/.bashrc
+echo  "export zone" >> /home/pythonapp/.bashrc
+echo  "export DATA_BACKEND" >> /home/pythonapp/.bashrc
+echo  "export CLOUD_STORAGE_BUCKET" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_USER" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_PASSWORD" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_DATABASE" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_CONNECTION_NAME" >> /home/pythonapp/.bashrc
+
 
 # Get the source code from the Google Cloud Repository
 # git requires $HOME and it's not set during the startup script.
 export HOME=/root
 git config --global credential.helper gcloud.sh
-git clone https://source.developers.google.com/p/mygcpproject-314813/r/github_artvalborgcp_getting-started-python /opt/app
-cd /opt/app && git checkout steps;
+git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
+cd /opt/app && git checkout mygcpsteps;
+
+
 # Install app dependencies
 virtualenv -p python3 /opt/app/7-gce/env
+
+echo  PROJECT_ID=$PROJECT_ID >> /opt/app/7-gce/env/bin/activate
+echo  region=$region >> /opt/app/7-gce/env/bin/activate
+echo  zone=$zone >> /opt/app/7-gce/env/bin/activate
+echo  DATA_BACKEND=$DATA_BACKEND >> /opt/app/7-gce/env/bin/activate
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /opt/app/7-gce/env/bin/activate
+echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /opt/app/7-gce/env/bin/activate
 source /opt/app/7-gce/env/bin/activate
 /opt/app/7-gce/env/bin/pip install -r /opt/app/7-gce/requirements.txt
 
@@ -64,7 +105,12 @@ user=pythonapp
 # Environment variables ensure that the application runs inside of the
 # configured virtualenv.
 environment=VIRTUAL_ENV="/opt/app/7-gce/env",PATH="/opt/app/7-gce/env/bin",\
-    HOME="/home/pythonapp",USER="pythonapp"
+    HOME="/home/pythonapp",USER="pythonapp",\
+    PROJECT_ID="$PROJECT_ID",region="$region", zone="$zone",DATA_BACKEND="$DATA_BACKEND",CLOUD_STORAGE_BUCKET="$CLOUD_STORAGE_BUCKET",\
+    CLOUDSQL_USER="$CLOUDSQL_USER",CLOUDSQL_PASSWORD="$CLOUDSQL_PASSWORD",CLOUDSQL_DATABASE="$CLOUDSQL_DATABASE",\
+    CLOUDSQL_CONNECTION_NAME="$CLOUDSQL_CONNECTION_NAME"
+
+
 stdout_logfile=syslog
 stderr_logfile=syslog
 EOF
@@ -73,4 +119,31 @@ supervisorctl reread
 supervisorctl update
 
 # Application should now be running under supervisor
+
+cd /usr/local/bin
+curl  https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -o cloud_sql_proxy
+chmod +x cloud_sql_proxy
+
+cat >/etc/systemd/system/cloud-sql-proxy.service << EOF
+[Unit]
+Description=Connecting MySQL Client from Compute Engine using the Cloud SQL Proxy
+Documentation=https://cloud.google.com/sql/docs/mysql/connect-compute-engine
+Requires=networking.service
+After=networking.service
+
+[Service]
+WorkingDirectory=/usr/local/bin
+ExecStart=/usr/local/bin/cloud_sql_proxy -dir=/var/run/cloud-sql-proxy -instances=$CLOUDSQL_CONNECTION_NAME=tcp:3306
+Restart=always
+StandardOutput=journal
+User=pythonapp
+
+[Install]
+WantedBy=multi-user.target
+
+EOF
+systemctl daemon-reload
+systemctl enable cloud-sql-proxy
+systemctl start cloud-sql-proxy
+
 # [END startup]

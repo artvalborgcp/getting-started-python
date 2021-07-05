@@ -22,19 +22,19 @@ resource "google_service_networking_connection" "mygcp_vpc_connection" {
 
 
 resource "google_sql_database" "database" {
-  name     = var.name_prefix
+  name     = var.db_name_prefix
   project  = var.project_id
   instance = google_sql_database_instance.sqlinstance.name
 }
 
 resource "google_sql_database_instance" "sqlinstance" {
 
-  name             = var.name_prefix
-  project          = var.project_id
-  region           = var.region
-  database_version = var.database_version
-
-  depends_on = [google_service_networking_connection.mygcp_vpc_connection]
+  name                = var.db_name_prefix
+  project             = var.project_id
+  region              = var.region
+  database_version    = var.database_version
+  deletion_protection = var.deletion_protection
+  depends_on          = [google_service_networking_connection.mygcp_vpc_connection]
 
   settings {
     tier = var.tier
@@ -49,7 +49,6 @@ resource "google_sql_user" "sqluser" {
   name       = var.user_name
   project    = var.project_id
   instance   = google_sql_database_instance.sqlinstance.name
-  host       = var.user_host
   password   = var.user_password
   depends_on = [google_sql_database_instance.sqlinstance]
 }

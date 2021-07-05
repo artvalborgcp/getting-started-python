@@ -35,7 +35,7 @@ resource "google_compute_instance_template" "tpl" {
 
   service_account {
 
-    email  = google_service_account.isa.email
+    email  = module.sa.email
     scopes = var.sa_compute_scope
   }
 
@@ -73,17 +73,6 @@ resource "google_compute_instance_group_manager" "instance_group_manager" {
     instance_template = google_compute_instance_template.tpl.id
   }
 
-  depends_on = [google_service_account.isa]
-
-}
-
-
-
-resource "google_storage_bucket" "bucket" {
-  name          = "${var.project_id}-bucket"
-  project       = var.project_id
-  labels        = var.labels
-  storage_class = var.storage_class
-  location      = var.location
+  depends_on = [module.sa]
 
 }

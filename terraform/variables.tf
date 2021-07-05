@@ -218,10 +218,7 @@ variable "check_interval_mygcplb" {
 
 
 
-variable "account_id" {
-  description = "The service account for compute instance id"
-  type        = string
-}
+
 
 variable "sa_compute_scope" {
   description = "A list of service scopes. To allow full access to all Cloud APIs, use the cloud-platform "
@@ -230,16 +227,9 @@ variable "sa_compute_scope" {
 }
 
 
-variable "roles_for_gcp" {
-  description = "Roles for Service Account the Instances"
-  type        = map(string)
-  default = {
-    "storage"   = "roles/storage.objectCreator"
-    "datastore" = "roles/datastore.user"
-    "pubsub"    = "roles/pubsub.editor"
-    "source"    = "roles/source.reader"
-
-  }
+variable "account_id" {
+  description = "The service account for compute instance id"
+  type        = string
 }
 
 
@@ -251,9 +241,19 @@ variable "tier" {
 variable "database_version" {
   description = "The MySQL, PostgreSQL or SQL Server (beta) version to use."
   type        = string
-  default     = "MYSQL_5_7"
+  default     = "MYSQL_5_6"
+}
+variable "deletion_protection" {
+  description = "Unless this field is set to false command that deletes the instance will fail"
+  type        = bool
+  default     = false
 }
 
+variable "db_name_prefix" {
+  description = "The name of the database"
+  type        = string
+  default     = ""
+}
 
 variable "user_name" {
   description = "The name of the default user"

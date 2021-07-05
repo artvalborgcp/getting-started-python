@@ -18,7 +18,6 @@ set -v
 
 #
 # Talk to the metadata server to get the project id
-
 PROJECT_ID=$(curl -s "http://metadata.google.internal/computeMetadata/v1/project/project-id" -H "Metadata-Flavor: Google")
 region=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/region" -H "Metadata-Flavor: Google")
 zone=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/zone" -H "Metadata-Flavor: Google")
@@ -28,17 +27,6 @@ CLOUDSQL_USER=$(curl "http://metadata.google.internal/computeMetadata/v1/instanc
 CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_PASSWORD" -H "Metadata-Flavor: Google")
 CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
 CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
-
-#echo  PROJECT_ID=$PROJECT_ID >> /etc/profile
-#echo  region=$region >> /etc/profile
-#echo  zone=$zone >> /etc/profile
-#echo  DATA_BACKEND=$DATA_BACKEND >> /etc/profile
-#echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /etc/profile
-#echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /etc/profile
-#echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/profile
-#echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/profile
-#echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/profile
-
 
 # Install logging monitor. The monitor will automatically pickup logs sent to
 # syslog.
@@ -68,6 +56,16 @@ echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
+echo  export PROJECT_ID >> /home/pythonapp/.bashrc
+echo  export region >> /home/pythonapp/.bashrc
+echo  export zone >> /home/pythonapp/.bashrc
+echo  export DATA_BACKEND >> /home/pythonapp/.bashrc
+echo  export CLOUD_STORAGE_BUCKET >> /home/pythonapp/.bashrc
+echo  export CLOUDSQL_USER >> /home/pythonapp/.bashrc
+echo  export CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
+echo  export CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
+echo  export CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
+
 
 # Get the source code from the Google Cloud Repository
 # git requires $HOME and it's not set during the startup script.

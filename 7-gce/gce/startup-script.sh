@@ -56,15 +56,15 @@ echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
-echo  export PROJECT_ID >> /home/pythonapp/.bashrc
-echo  export region >> /home/pythonapp/.bashrc
-echo  export zone >> /home/pythonapp/.bashrc
-echo  export DATA_BACKEND >> /home/pythonapp/.bashrc
-echo  export CLOUD_STORAGE_BUCKET >> /home/pythonapp/.bashrc
-echo  export CLOUDSQL_USER >> /home/pythonapp/.bashrc
-echo  export CLOUDSQL_PASSWORD >> /home/pythonapp/.bashrc
-echo  export CLOUDSQL_DATABASE >> /home/pythonapp/.bashrc
-echo  export CLOUDSQL_CONNECTION_NAME >> /home/pythonapp/.bashrc
+echo  "export PROJECT_ID" >> /home/pythonapp/.bashrc
+echo  "export region" >> /home/pythonapp/.bashrc
+echo  "export zone" >> /home/pythonapp/.bashrc
+echo  "export DATA_BACKEND" >> /home/pythonapp/.bashrc
+echo  "export CLOUD_STORAGE_BUCKET" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_USER" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_PASSWORD" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_DATABASE" >> /home/pythonapp/.bashrc
+echo  "export CLOUDSQL_CONNECTION_NAME" >> /home/pythonapp/.bashrc
 
 
 # Get the source code from the Google Cloud Repository

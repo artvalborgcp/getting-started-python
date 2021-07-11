@@ -5,7 +5,7 @@ resource "google_service_account" "isa" {
 }
 
 
-resource "google_project_iam_member" "admins" {
+resource "google_project_iam_member" "isa_roles" {
   depends_on = [google_service_account.isa]
   for_each   = var.roles_for_gcp
   role       = each.value

@@ -18,6 +18,13 @@ variable "roles_for_gcp" {
     "datastore" = "roles/datastore.user"
     "pubsub"    = "roles/pubsub.editor"
     "source"    = "roles/source.reader"
+    "cloudsql"  = "roles/cloudsql.client"
 
   }
+}
+
+variable "sa_compute_scope" {
+  description = "A list of service scopes. To allow full access to all Cloud APIs, use the cloud-platform "
+  type        = list(string)
+  default     = []
 }

@@ -15,6 +15,6 @@ output "instance_connection_name" {
 }
 
 output "global_ip_address" {
-  value       = google_compute_global_address.mygcpglobaladdress.address
+  value       = module.lb.global_ip_address
   description = "global ip address of Load Balancer"
 }

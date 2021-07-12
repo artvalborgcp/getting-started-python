@@ -64,88 +64,17 @@ module "sql" {
   user_password       = var.user_password
 }
 
-
-
-resource "google_compute_global_address" "mygcpglobaladdress" {
-  project = var.project_id
-  name    = "${var.name_prefix}-address"
-}
-
-resource "google_compute_http_health_check" "mygcplbhealth" {
-  name               = "${var.name_prefix}-lb-health-check"
-  request_path       = var.url_map
-  port               = var.service_port
-  timeout_sec        = var.timeout_mygcplb
-  check_interval_sec = var.check_interval_mygcplb
-}
-
-resource "google_compute_url_map" "url" {
-  name            = "${var.name_prefix}-url"
-  default_service = google_compute_backend_service.backendservice.id
-
-  host_rule {
-    hosts        = ["*"]
-    path_matcher = "allpaths"
-  }
-
-  path_matcher {
-    name            = "allpaths"
-    default_service = google_compute_backend_service.backendservice.id
-
-    path_rule {
-      paths   = ["/*"]
-      service = google_compute_backend_service.backendservice.id
-    }
-  }
-}
-
-resource "google_compute_target_http_proxy" "http" {
-  project = var.project_id
-  name    = "${var.name_prefix}-http-proxy"
-  url_map = google_compute_url_map.url.id
-}
-
-resource "google_compute_global_forwarding_rule" "http" {
-
-  project    = var.project_id
-  name       = "${var.name_prefix}-http-rule"
-  target     = google_compute_target_http_proxy.http.id
-  ip_address = google_compute_global_address.mygcpglobaladdress.address
-  port_range = var.globalforwardingport
-
-
-  depends_on = [google_compute_global_address.mygcpglobaladdress]
-
-}
-
-resource "google_compute_backend_service" "backendservice" {
-  name          = "${var.name_prefix}-backend-service"
-  project       = var.project_id
-  port_name     = var.service_port_name
-  protocol      = var.protocol_backendservice
-  timeout_sec   = var.timeout_backendservice
-  health_checks = [google_compute_http_health_check.mygcplbhealth.id]
-  backend {
-    group = module.instances.instance_group
-  }
+module "lb" {
+  source               = "./modules/lb"
+  project_id           = var.project_id
+  region               = var.region
+  zone                 = var.zone
+  name_prefix          = var.name_prefix
+  account_id           = var.account_id
+  globalforwardingport = var.globalforwardingport
+  service_port         = var.service_port
+  service_port_name    = var.service_port_name
 }
 
 
-resource "google_compute_global_address" "mygcpprivate_ip" {
-  provider      = google-beta
-  project       = var.project_id
-  name          = "${var.project_id}-ip-address"
-  labels        = var.labels
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  prefix_length = 16
-  network       = module.network.network_self_link
-}
 
-resource "google_service_networking_connection" "mygcp_vpc_connection" {
-  provider = google-beta
-
-  network                 = module.network.network_self_link
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.mygcpprivate_ip.name]
-}

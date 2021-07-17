@@ -1,0 +1,40 @@
+---
+- hosts: local
+  connection: local
+  gather_facts: no
+  tasks:
+    - name: Download fluentd installer
+      get_url:
+        url: "https://storage.googleapis.com/signals-agents/logging/google-fluentd-install.sh"
+        dest: "/tmp/google-fluentd-install.sh"
+        mode: 0755
+
+    - name: Execute the fluentd-installer.sh
+      shell: /tmp/google-fluentd-install.sh
+
+    - name: Remove the fluentd-installer.sh
+      file:
+       path: "/tmp/google-fluentd-install.sh"
+       state: "absent"
+
+    - name: Install cloud-sql-proxy
+      get_url:
+        url: "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
+        dest: "/usr/local/bin/cloud-sql-proxy"
+        mode: 0755
+
+    - name: Configure cloud-sql-proxy service
+      template:
+        src: cloud-sql-proxy.service
+        dest: /etc/systemd/system/cloud-sql-proxy.service
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - reload systemd configuration
+        - restart cloud-sql-proxy
+
+    - name: Enable cloud-sql-proxy service
+      service:
+        name: cloud-sql-proxy.service
+        enabled: true

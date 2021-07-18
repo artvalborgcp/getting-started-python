@@ -1,6 +1,6 @@
 ---
-- hosts: local
-  connection: local
+- hosts: localhost
+  connection: localhost
   gather_facts: no
   vars:
     PROJECT_ID: "{{ lookup('env', 'PROJECT_ID') }}"
@@ -36,7 +36,7 @@
 
     - name: Configure cloud-sql-proxy service
       template:
-        src: cloud-sql-proxy.service
+        src: templates/cloud-sql-proxy.service
         dest: /etc/systemd/system/cloud-sql-proxy.service
         owner: root
         group: root
@@ -49,3 +49,6 @@
       service:
         name: cloud-sql-proxy.service
         enabled: true
+
+  handlers:
+    - include: handlers/main.yml

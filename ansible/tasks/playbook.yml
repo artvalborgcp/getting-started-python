@@ -58,7 +58,7 @@
     - name: Initiate virtualenv
       pip:
         virtualenv: /opt/app/7-gce/env
-        virtualenv_python: python3.6
+        virtualenv_python: python3
         requirements: /opt/app/7-gce/requirements.txt
 
     - name: Install cloud-sql-proxy

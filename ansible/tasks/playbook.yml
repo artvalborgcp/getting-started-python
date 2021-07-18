@@ -64,7 +64,7 @@
     - name: Install cloud-sql-proxy
       get_url:
         url: "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
-        dest: "/usr/local/bin/cloud-sql-proxy"
+        dest: "/usr/local/bin/cloud_sql_proxy"
         mode: 0755
 
     - name: Configure cloud-sql-proxy service

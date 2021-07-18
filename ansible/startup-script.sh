@@ -21,7 +21,7 @@ echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/environment
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/environment
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/environment
 
-
+source /etc/environment
 
 apt-get update
 apt-get install -yq \

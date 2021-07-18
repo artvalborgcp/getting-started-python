@@ -28,6 +28,29 @@
        path: "/tmp/google-fluentd-install.sh"
        state: "absent"
 
+    - name: Add the user 'pythonapp' with a bash shell
+      user:
+        name: pythonapp
+        shell: /bin/bash
+        home: /home/pythonapp
+
+    - name: Change kubeconfig file permission
+      file:
+        path: /opt/app
+        owner: pythonapp
+        group: pythonapp
+
+    - name: Install virtualenv for Python 3
+      pip:
+        name: virtualenv
+        executable: pip3
+
+    - name: Initiate virtualenv
+      pip:
+        virtualenv: /opt/app/7-gce/env
+        virtualenv_python: python3.6
+        requirements: /opt/app/7-gce/requirements.txt
+
     - name: Install cloud-sql-proxy
       get_url:
         url: "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"

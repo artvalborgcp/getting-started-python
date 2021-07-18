@@ -22,4 +22,4 @@ git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
 cd /opt/app && git checkout mygcpsteps;
 cd ansible/
-ansible-playbook playbook.yml
+ansible-playbook playbook.yml -v

@@ -36,7 +36,7 @@
 
     - name: Configure cloud-sql-proxy service
       template:
-        src: templates/cloud-sql-proxy.service
+        src: ../templates/cloud-sql-proxy.service
         dest: /etc/systemd/system/cloud-sql-proxy.service
         owner: root
         group: root
@@ -51,4 +51,4 @@
         enabled: true
 
   handlers:
-    - include: handlers/main.yml
+    - include: ../handlers/main.yml

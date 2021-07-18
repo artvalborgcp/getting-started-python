@@ -20,6 +20,15 @@ echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /etc/environment
 echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/environment
 echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/environment
 echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/environment
+echo  "export PROJECT_ID" >> /etc/environment
+echo  "export region" >> /etc/environment
+echo  "export zone" >> /etc/environment
+echo  "export DATA_BACKEND" >> /etc/environment
+echo  "export CLOUD_STORAGE_BUCKET" >> /etc/environment
+echo  "export CLOUDSQL_USER" >> /etc/environment
+echo  "export CLOUDSQL_PASSWORD" >> /etc/environment
+echo  "export CLOUDSQL_DATABASE" >> /etc/environment
+echo  "export CLOUDSQL_CONNECTION_NAME" >> /etc/environment
 
 source /etc/environment
 

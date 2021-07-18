@@ -12,7 +12,16 @@
     CLOUDSQL_PASSWORD: "{{ lookup('env', 'CLOUDSQL_PASSWORD') }}"
     CLOUDSQL_DATABASE: "{ { lookup('env', 'CLOUDSQL_DATABASE') } }"
     CLOUDSQL_CONNECTION_NAME: "{ { lookup('env', 'CLOUDSQL_CONNECTION_NAME') } }"
-
+  environment:
+    PROJECT_ID: '{{ PROJECT_ID }}'
+    region:  '{{ region }}'
+    zone: '{{ zone }}'
+    DATA_BACKEND: '{{ DATA_BACKEND }}'
+    CLOUD_STORAGE_BUCKET: '{{ CLOUD_STORAGE_BUCKET }}'
+    CLOUDSQL_USER: '{{ CLOUDSQL_USER }}'
+    CLOUDSQL_PASSWORD: '{{ CLOUDSQL_PASSWORD }}'
+    CLOUDSQL_DATABASE: '{{ CLOUDSQL_DATABASE }}'
+    CLOUDSQL_CONNECTION_NAME: '{{ CLOUDSQL_CONNECTION_NAME }}'
   tasks:
     - name: Download fluentd installer
       get_url:
@@ -34,11 +43,12 @@
         shell: /bin/bash
         home: /home/pythonapp
 
-    - name: Change kubeconfig file permission
+    - name: Change /opt/app directory permission
       file:
         path: /opt/app
         owner: pythonapp
         group: pythonapp
+        recurse: yes
 
     - name: Install virtualenv for Python 3
       pip:

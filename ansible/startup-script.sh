@@ -11,6 +11,17 @@ CLOUDSQL_PASSWORD=$(curl "http://metadata.google.internal/computeMetadata/v1/ins
 CLOUDSQL_DATABASE=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_DATABASE" -H "Metadata-Flavor: Google")
 CLOUDSQL_CONNECTION_NAME=$(curl "http://metadata.google.internal/computeMetadata/v1/instance/attributes/CLOUDSQL_CONNECTION_NAME" -H "Metadata-Flavor: Google")
 
+echo  PROJECT_ID=$PROJECT_ID >> /etc/environment
+echo  region=$region >> /etc/environment
+echo  zone=$zone >> /etc/environment
+echo  DATA_BACKEND=$DATA_BACKEND >> /etc/environment
+echo  CLOUD_STORAGE_BUCKET=$CLOUD_STORAGE_BUCKET >> /etc/environment
+echo  CLOUDSQL_USER=$CLOUDSQL_USER >> /etc/environment
+echo  CLOUDSQL_PASSWORD=$CLOUDSQL_PASSWORD >> /etc/environment
+echo  CLOUDSQL_DATABASE=$CLOUDSQL_DATABASE >> /etc/environment
+echo  CLOUDSQL_CONNECTION_NAME=$CLOUDSQL_CONNECTION_NAME >> /etc/environment
+
+
 
 apt-get update
 apt-get install -yq \
@@ -21,5 +32,6 @@ export HOME=/root
 git config --global credential.helper gcloud.sh
 git clone https://source.developers.google.com/p/my-gcp-terraform/r/github_artvalborgcp_getting-started-python /opt/app
 cd /opt/app && git checkout mygcpsteps;
+
 cd ansible/
 ansible-playbook tasks/playbook.yml -v

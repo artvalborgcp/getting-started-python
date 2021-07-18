@@ -2,6 +2,17 @@
 - hosts: local
   connection: local
   gather_facts: no
+  vars:
+    PROJECT_ID: "{{ lookup('env', 'PROJECT_ID') }}"
+    region: "{ { lookup('env', 'region') } }"
+    zone: "{{ lookup('env', 'zone') }}"
+    DATA_BACKEND: "{ { lookup('env', 'DATA_BACKEND') } }"
+    CLOUD_STORAGE_BUCKET: "{{ lookup('env', 'CLOUD_STORAGE_BUCKET') }}"
+    CLOUDSQL_USER: "{ { lookup('env', 'CLOUDSQL_USER') } }"
+    CLOUDSQL_PASSWORD: "{{ lookup('env', 'CLOUDSQL_PASSWORD') }}"
+    CLOUDSQL_DATABASE: "{ { lookup('env', 'CLOUDSQL_DATABASE') } }"
+    CLOUDSQL_CONNECTION_NAME: "{ { lookup('env', 'CLOUDSQL_CONNECTION_NAME') } }"
+
   tasks:
     - name: Download fluentd installer
       get_url:

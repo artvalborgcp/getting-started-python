@@ -83,5 +83,18 @@
         name: cloud-sql-proxy.service
         enabled: true
 
+    - name: Configure cloud-sql-proxy service
+      template:
+        src: ../templates/python-app.conf
+        dest: /etc/supervisor/conf.d/python-app.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - add pythonapp
+        - start pythonapp
+
+
+
   handlers:
     - include: ../handlers/main.yml

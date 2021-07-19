@@ -83,7 +83,7 @@
         name: cloud-sql-proxy.service
         enabled: true
 
-    - name: Configure cloud-sql-proxy service
+    - name: Configure pythonapp
       template:
         src: ../templates/python-app.conf
         dest: /etc/supervisor/conf.d/python-app.conf

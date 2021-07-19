@@ -5,9 +5,6 @@
 - name: restart cloud-sql-proxy
   service: name=cloud-sql-proxy state=restarted
 
-- name: restart pythonapp
-  action: supervisorctl name=pythonapp state=restarted
-
 - name: add pythonapp
   supervisorctl: name=pythonapp state=present
 

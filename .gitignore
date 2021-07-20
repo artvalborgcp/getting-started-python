@@ -31,3 +31,13 @@ lib/
 /client-secret.json
 /service-account.json
 /config.py
+/terraform/.terraform/
+/terraform/instance1/
+/terraform/.terraform.lock.hcl
+/terraform/README.md
+/terraform/terraform.tfstate
+/terraform/terraform.tfstate.backup
+/terraform/testing.tfvars
+/venv/
+/terraform.bak/
+/.idea/

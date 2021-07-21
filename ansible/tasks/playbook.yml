@@ -96,6 +96,11 @@
         - add pythonapp
         - start pythonapp
 
+    - name: Wait for port 3306 to become open on the host, don't start checking for 5 seconds
+      wait_for:
+        port: 3306
+        delay: 5
+
     - name: Initialize application tables in databas
       shell: "/opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
 

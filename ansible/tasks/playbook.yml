@@ -97,7 +97,7 @@
         - start pythonapp
 
     - name: Initialize application tables in databas
-      shell: "source /opt/app/7-gce/env/bin/activate; /opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
+      shell: "/opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
 
 
 

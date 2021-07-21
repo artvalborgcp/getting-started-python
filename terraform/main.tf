@@ -49,6 +49,7 @@ module "instances" {
   databackend             = var.databackend
   user_name               = var.user_name
   user_password           = var.user_password
+  depends_on = [module.network]
 }
 
 module "sql" {
@@ -62,6 +63,7 @@ module "sql" {
   name_prefix         = var.name_prefix
   user_name           = var.user_name
   user_password       = var.user_password
+  depends_on = [module.network]
 }
 
 module "lb" {
@@ -74,6 +76,7 @@ module "lb" {
   globalforwardingport = var.globalforwardingport
   service_port         = var.service_port
   service_port_name    = var.service_port_name
+  depends_on = [module.instances]
 }
 
 

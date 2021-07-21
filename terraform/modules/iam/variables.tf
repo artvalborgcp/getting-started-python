@@ -15,10 +15,11 @@ variable "roles_for_gcp" {
   type        = map(string)
   default = {
     "storage"   = "roles/storage.objectCreator"
-    "datastore" = "roles/datastore.user"
+    "datastore" = "roles/datastore.owner"
     "pubsub"    = "roles/pubsub.editor"
     "source"    = "roles/source.reader"
-    "cloudsql"  = "roles/cloudsql.client"
+    "cloudsql"  = "roles/cloudsql.admin"
+    "logging"   = "roles/logging.logWriter"
 
   }
 }

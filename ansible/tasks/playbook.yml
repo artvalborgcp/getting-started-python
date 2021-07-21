@@ -84,9 +84,6 @@
         enabled: true
         state: started
 
-    - name: Initialize application tables in databas
-      shell: "source /opt/app/7-gce/env/bin/activate; source /etc/environment; /opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
-
     - name: Configure pythonapp
       template:
         src: ../templates/python-app.conf
@@ -98,6 +95,8 @@
         - add pythonapp
         - start pythonapp
 
+    - name: Initialize application tables in databas
+      shell: "source /opt/app/7-gce/env/bin/activate; source /etc/environment; /opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
 
 
   handlers:

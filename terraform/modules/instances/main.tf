@@ -1,4 +1,3 @@
-
 resource "google_compute_instance_template" "tpl" {
   name           = var.name_prefix
   project        = var.project_id

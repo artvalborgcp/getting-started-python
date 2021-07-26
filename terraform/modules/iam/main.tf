@@ -4,10 +4,9 @@ resource "google_service_account" "isa" {
   display_name = "ServiceAccount for compute_instance"
 }
 
-
 resource "google_project_iam_member" "isa_roles" {
   depends_on = [google_service_account.isa]
-  for_each   = var.roles_for_gcp
+  for_each   = var.roles_for_instances_serviceacount
   role       = each.value
   member     = "serviceAccount:${google_service_account.isa.email}"
 

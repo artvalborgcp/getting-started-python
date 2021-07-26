@@ -1,5 +1,3 @@
-
-
 variable "project_id" {
   description = "The ID of the project to create the bucket in."
   type        = string
@@ -10,7 +8,7 @@ variable "account_id" {
   type        = string
 }
 
-variable "roles_for_gcp" {
+variable "roles_for_instances_serviceacount" {
   description = "Roles for Service Account the Instances"
   type        = map(string)
   default = {

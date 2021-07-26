@@ -27,7 +27,7 @@ variable "tier" {
 variable "database_version" {
   description = "The MySQL, PostgreSQL or SQL Server (beta) version to use."
   type        = string
-  default     = "MYSQL_5_6"
+  default     = "MYSQL_5_7"
 }
 variable "deletion_protection" {
   description = "Unless this field is set to false command that deletes the instance will fail"

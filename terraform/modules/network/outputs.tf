@@ -3,7 +3,6 @@ output "subnet" {
   description = "Subnetwork of the created network "
 }
 
-
 output "network" {
   value       = google_compute_network.mygcpnet
   description = "Created network"

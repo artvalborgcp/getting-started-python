@@ -1,4 +1,3 @@
-
 resource "google_compute_network" "mygcpnet" {
   project                 = var.project_id
   name                    = "${var.name_prefix}"
@@ -27,7 +26,6 @@ resource "google_compute_firewall" "mygcpnet-allow-http-ssh-rdp-icmp" {
     protocol = "icmp"
   }
 }
-
 
 resource "google_compute_router" "mygcprouter" {
   project = var.project_id

@@ -1,4 +1,3 @@
-
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
@@ -31,7 +30,6 @@ variable "auto_create_subnetworks" {
   type        = bool
   default     = false
 }
-
 
 variable "ip_cidr_range" {
   description = "The ip subnet of the network being created"

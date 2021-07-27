@@ -26,16 +26,14 @@ resource "google_compute_instance_template" "tpl" {
     disk_type    = var.disk_type
     boot         = var.boot
   }
-  depends_on = [google_compute_subnetwork.mygcpsubnet]
   network_interface {
-    network    = google_compute_network.mygcpnet.name
-    subnetwork = google_compute_subnetwork.mygcpsubnet.name
+    network    = var.name_prefix
+    subnetwork = var.name_prefix
 
   }
 
   service_account {
-
-    email  = google_service_account.isa.email
+    email  = "${var.account_id}@${var.project_id}.iam.gserviceaccount.com"
     scopes = var.sa_compute_scope
   }
 
@@ -72,18 +70,4 @@ resource "google_compute_instance_group_manager" "instance_group_manager" {
   version {
     instance_template = google_compute_instance_template.tpl.id
   }
-
-  depends_on = [google_service_account.isa]
-
-}
-
-
-
-resource "google_storage_bucket" "bucket" {
-  name          = "${var.project_id}-bucket"
-  project       = var.project_id
-  labels        = var.labels
-  storage_class = var.storage_class
-  location      = var.location
-
 }

@@ -1,0 +1,110 @@
+---
+- hosts: localhost
+  connection: localhost
+  gather_facts: no
+  vars:
+    PROJECT_ID: "{{ lookup('env', 'PROJECT_ID') }}"
+    region: "{{ lookup('env', 'region') }}"
+    zone: "{{ lookup('env', 'zone') }}"
+    DATA_BACKEND: "{{ lookup('env', 'DATA_BACKEND') }}"
+    CLOUD_STORAGE_BUCKET: "{{ lookup('env', 'CLOUD_STORAGE_BUCKET') }}"
+    CLOUDSQL_USER: "{{ lookup('env', 'CLOUDSQL_USER') }}"
+    CLOUDSQL_PASSWORD: "{{ lookup('env', 'CLOUDSQL_PASSWORD') }}"
+    CLOUDSQL_DATABASE: "{{ lookup('env', 'CLOUDSQL_DATABASE') }}"
+    CLOUDSQL_CONNECTION_NAME: "{{ lookup('env', 'CLOUDSQL_CONNECTION_NAME') }}"
+  environment:
+    PROJECT_ID: '{{ PROJECT_ID }}'
+    region:  '{{ region }}'
+    zone: '{{ zone }}'
+    DATA_BACKEND: '{{ DATA_BACKEND }}'
+    CLOUD_STORAGE_BUCKET: '{{ CLOUD_STORAGE_BUCKET }}'
+    CLOUDSQL_USER: '{{ CLOUDSQL_USER }}'
+    CLOUDSQL_PASSWORD: '{{ CLOUDSQL_PASSWORD }}'
+    CLOUDSQL_DATABASE: '{{ CLOUDSQL_DATABASE }}'
+    CLOUDSQL_CONNECTION_NAME: '{{ CLOUDSQL_CONNECTION_NAME }}'
+  tasks:
+    - name: Download fluentd installer
+      get_url:
+        url: "https://storage.googleapis.com/signals-agents/logging/google-fluentd-install.sh"
+        dest: "/tmp/google-fluentd-install.sh"
+        mode: 0755
+
+    - name: Execute the fluentd-installer.sh
+      shell: /tmp/google-fluentd-install.sh
+
+    - name: Remove the fluentd-installer.sh
+      file:
+       path: "/tmp/google-fluentd-install.sh"
+       state: "absent"
+
+    - name: Add the user 'pythonapp' with a bash shell
+      user:
+        name: pythonapp
+        shell: /bin/bash
+        home: /home/pythonapp
+
+    - name: Change /opt/app directory permission
+      file:
+        path: /opt/app
+        owner: pythonapp
+        group: pythonapp
+        recurse: yes
+
+    - name: Install virtualenv for Python 3
+      pip:
+        name: virtualenv
+        executable: pip3
+
+    - name: Initiate virtualenv
+      pip:
+        virtualenv: /opt/app/7-gce/env
+        virtualenv_python: python3
+        requirements: /opt/app/7-gce/requirements.txt
+
+    - name: Install cloud-sql-proxy
+      get_url:
+        url: "https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64"
+        dest: "/usr/local/bin/cloud_sql_proxy"
+        mode: 0755
+
+    - name: Configure cloud-sql-proxy service
+      template:
+        src: ../templates/cloud-sql-proxy.service
+        dest: /etc/systemd/system/cloud-sql-proxy.service
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - reload systemd configuration
+        - restart cloud-sql-proxy
+
+    - name: Enable cloud-sql-proxy service
+      service:
+        name: cloud-sql-proxy.service
+        enabled: true
+        state: started
+
+
+    - name: Configure pythonapp
+      template:
+        src: ../templates/python-app.conf
+        dest: /etc/supervisor/conf.d/python-app.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify:
+        - add pythonapp
+        - start pythonapp
+
+    - name: Wait for port 3306 to become open on the host, don't start checking for 5 seconds
+      wait_for:
+        port: 3306
+        delay: 5
+
+    - name: Initialize application tables in databas
+      shell: "/opt/app/7-gce/env/bin/python /opt/app/7-gce/bookshelf/model_cloudsql.py"
+
+
+
+  handlers:
+    - include: ../handlers/main.yml
